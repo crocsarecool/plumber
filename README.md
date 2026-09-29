@@ -14,7 +14,7 @@ Every time the app gets something wrong, that becomes a saved case. Fixes happen
 
 ## What to tell your agent
 
-Open your coding agent and point it at this repo. It reads the instructions and does the rest.
+Open your coding agent and point it at this repo. It reads the instructions and does the rest. Two other doors load those same instructions: [Gitbot](gitbot/) runs Plumber through git, and [Grokbot](grokbot/) runs it through the grokbot.
 
 | You are | Say |
 |---|---|
@@ -101,6 +101,8 @@ Plumber is that loop taken out of Murmur, so any app you built for yourself can 
 | [skills/maintain/SKILL.md](skills/maintain/SKILL.md) | The `/maintain` routine |
 | [FORMATS.md](FORMATS.md) | Every file Plumber reads and writes |
 | [templates/](templates/) | Blank `PLUMBER.md` and `LEARNED.md` |
+| [gitbot/](gitbot/) | Plumber through git, instead of pasting a prompt |
+| [grokbot/](grokbot/) | Plumber through the grokbot |
 
 ---
 

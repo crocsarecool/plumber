@@ -53,6 +53,14 @@ A fresh agent tried two opening messages on Murmur without changing anything. Th
 
 Not borrowed yet: the scorecard (latency, failure rates and costs compared with the week before). It's worth adding once a second app shows which parts are generic.
 
+## Launch doors (29 Sep 2026)
+
+The sentence in the README ("point your agent at this repo") is the copy-in step. Gitbot and Grokbot are two other ways to hand an agent that same routine. They do not rewrite the maintain skill, and neither one calls the other.
+
+Gitbot is a clone. The visitor opens the `gitbot/` folder and the agent reads the instructions there. The clone stays in a scratch directory, because AGENTS.md already says not to clone Plumber inside the app.
+
+Grokbot is its own door, a folder of the same instructions. It is not a Grok product preset and it does not talk to an API. The visitor points an agent at `https://raw.githubusercontent.com/crocsarecool/plumber/main/grokbot/AGENTS.md`.
+
 ## Open
 
 - **Murmur:** keep `cleaning-up-murmur` and have it read flags and friends' reports too (recommended), or replace it with `/maintain`.
