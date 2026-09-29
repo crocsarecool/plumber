@@ -2,7 +2,7 @@
 
 Why Plumber is shaped the way it is. Read this before changing SETUP.md or the maintain skill.
 
-The product note (the idea, the case for it, risks, open questions) is at https://claude.ai/code/artifact/fa01be00-ec21-43fe-b47c-519558d5c0c5.
+The product thinking (the idea, why friends are the wedge, risks, open questions) is in [PRODUCT.md](PRODUCT.md).
 
 ## Where it came from (29 Sep 2026)
 
