@@ -14,7 +14,9 @@ Every time the app gets something wrong, that becomes a saved case. Fixes happen
 
 ## What to tell your agent
 
-Open your coding agent and point it at this repo. It reads the instructions and does the rest.
+Open your coding agent and point it at this repo. If you built the app, open the agent in the app's folder, not in Plumber. It reads the instructions and does the rest.
+
+If your agent can't open GitHub links, clone this repo to a scratch folder outside your app and give it that path. If it can only fetch web pages, give it `https://raw.githubusercontent.com/crocsarecool/plumber/main/AGENTS.md`.
 
 | You are | Say |
 |---|---|
