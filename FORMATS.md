@@ -29,7 +29,7 @@ One line per "that was wrong".
 {"t": "2026-09-29T10:05:01Z", "trace": "2026-09-29T10-04-12.381Z", "note": "dropped the word ship", "by": "me"}
 ```
 
-`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. `by` is `"me"` on the owner's install, or the friend's name on theirs. The app asks once which it is.
+`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. A note of just `test` means someone was checking that flagging works, and `/maintain` doesn't act on it. `by` is `"me"` on the owner's install, or the friend's name on theirs. The app asks once which it is.
 
 ## Reports (friends)
 
@@ -48,7 +48,7 @@ Before saving, the app shows the friend what's in it: the text in full, and each
 
 The default. If the app already keeps cases somewhere else or in another shape, `PLUMBER.md` names that file and format, and Plumber uses it instead.
 
-Cases hold what people typed or said, so they stay out of git, which may be public. The cost is that they aren't on any branch: the owner should back up the data folder, because losing it loses the gate.
+Cases hold what people typed or said, so they stay out of git, which may be public. The cost is that they aren't on any branch: the owner should back up the data folder, because losing it loses the gate. An app that already keeps its cases in git can keep doing that.
 
 A JSON array. A case is something the app must keep doing right. The cases together are the gate every fix has to pass.
 
@@ -63,17 +63,19 @@ A JSON array. A case is something the app must keep doing right. The cases toget
 - `file`: optional. For a file input (a recording, an image), its name in `cases/files/`, copied there so log rotation can't delete it. Replay uses it instead of `input`, and a missing one is "couldn't run", not a failure.
 - `expect` / `reject`: regexes the output must / must not match. Prefer these, because they're cheap and exact.
 - `check`: optional. A plain-language rule for what a regex can't say. `/maintain` judges it by reading the output.
-- `known_failing`: `null`, or one line on why it can't be fixed yet. These cases don't block the gate, but every `/maintain` report lists them.
+- `known_failing`: `null`, or one line on why it fails. These cases don't block the gate. Two kinds of line mean something to `/maintain`: `"not tried yet: <what's wrong>"` is a known problem it should work on, and `"fixed on maintain-YYYY-MM-DD, not merged yet"` passes on that branch but still fails on main. Anything else means a fix was tried and didn't work.
 
 If the app calls a model and isn't deterministic, replay reruns a failed case once. Only failing twice counts.
 
 ## .plumber-state.json (data folder)
 
 ```json
-{"last_run": "2026-09-29T11:00:00Z"}
+{"last_run": "2026-09-29T11:00:00Z", "main": "c3d6970"}
 ```
 
-`/maintain` only looks at flags, errors and reports newer than this. It's set to the time of the newest item a run collected, not the time the run ended, so nothing that arrives mid-run is skipped.
+`last_run`: `/maintain` only looks at flags, errors and signs of trouble newer than this. It's set to the time of the newest item a run collected, not the time the run ended, so nothing that arrives mid-run is skipped. Reports don't use it: any zip at the top of `inbox/` is unread, however old.
+
+`main`: the commit on main the last run started from. The next run looks for what broke a case among the commits after it. A date isn't enough, because a branch merged late keeps its commits' earlier dates.
 
 ## plumber/ (data folder)
 

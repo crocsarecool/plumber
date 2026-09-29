@@ -23,6 +23,7 @@
 
 | What | Where |
 |---|---|
+| Plumber version | <commit of github.com/crocsarecool/plumber this was set up or last updated from, or "unknown"> |
 | Data folder | <path> (not in git) |
 | Traces | <path, or the existing log if reused> |
 | Trace fields | <"FORMATS.md", or the map, e.g. `t=time, kind=type, input=raw, files=[recording]`> |
