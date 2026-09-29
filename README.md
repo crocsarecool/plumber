@@ -1,6 +1,6 @@
 # Plumber
 
-> **Coding agents:** if someone asked you to set up Plumber, follow [SETUP.md](SETUP.md).
+> **Coding agents:** start with [AGENTS.md](AGENTS.md).
 
 A maintainer for software you built for yourself and then shared with a few friends.
 
@@ -8,13 +8,17 @@ Your coding agent already writes the code. Plumber gives it a routine for lookin
 
 There's no server and no account. Everything lives in your repo and your app's data folder.
 
-## Install
+## What to tell your agent
 
-Open your coding agent (Claude Code, Codex or OpenCode) in your app's repo and say:
+Open your coding agent (Claude Code, Codex or OpenCode) and point it at this repo. There's nothing to install. It reads the instructions and does the rest.
 
-> Set up Plumber from github.com/crocsarecool/plumber
+| You are | Say |
+|---|---|
+| Building an app | "Set up Plumber in this app from github.com/crocsarecool/plumber" |
+| Using a friend's app, and it got something wrong | "I use <friend>'s <app> and it got something wrong. Help me report it, using github.com/crocsarecool/plumber" |
+| Already using Plumber | "Update Plumber from github.com/crocsarecool/plumber" |
 
-It reads [SETUP.md](SETUP.md), looks at your app, asks you three questions, and wires everything in. This takes about 10 minutes.
+Setup looks at your app, asks you a few questions, and wires everything in on a branch. It takes about 10 minutes of your time, and the agent does the rest.
 
 ## Two things to learn
 

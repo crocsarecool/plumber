@@ -14,22 +14,31 @@ Read the repo's README, AGENTS.md or CLAUDE.md, and its entry points. Work out:
 - what "one thing the app did" means here: a dictation, a request, a command, a job
 - how it's built, tested and shipped, and how the people using it get updates
 - what already exists: a data folder, a log with one line per action, test cases and a way to replay them, a notes file of lessons learned
-- **whether something already maintains it**: scheduled agents (`~/.claude/scheduled-tasks/`, other agents' schedulers), cron jobs, CI workflows, review branches, report folders or state files in the data folder. If you find one, `/maintain` must not run next to it as a second routine. Ask the owner (step 2) whether `/maintain` should replace it, or whether it should stay as is and only borrow what it lacks.
+- **whether something already maintains it**: scheduled agents (`~/.claude/scheduled-tasks/`, other agents' schedulers), cron jobs, CI workflows, review branches, report folders or state files in the data folder. If you find one, `/maintain` must not run next to it as a second routine. Ask the owner in step 2 what to do about it.
+
+Then, before asking anything, tell the owner in a few lines what the app already has and what you'll add. Everything happens on the `plumber-setup` branch, and nothing merges without their yes.
 
 ## 2. Ask a few questions
 
 Ask them all in one message, each with the default you'd propose:
 
 1. **What should the app do for someone, and what's the most annoying way it gets that wrong?** Ask for two or three real examples. The answer becomes "What counts as wrong" in `PLUMBER.md`, so push past "crashes" to what the output should have been.
-2. **Who uses it besides you, and how do they get new versions?** This tells you whether to add "Send to <owner>" and what shipping means.
+2. **What name do your friends know you by, who uses it besides you, and how do they get new versions?** The name goes on "Send to <owner>" (default: the git user name). The rest tells you whether friends need that button at all, and what shipping means.
 3. **Where should its data live?** Propose the existing data folder, or something like `~/.<app>/`. It has to be outside git.
-4. Only if step 1 found an existing routine: **should `/maintain` replace it or leave it be?**
+4. Only if step 1 found an existing routine, offer three choices:
+   - **Keep it, and teach it to read flags and friends' reports.** Recommend this when the routine is already working well.
+   - **Replace it with `/maintain`.**
+   - **Leave it alone.** Warn that nothing will then read flags or reports.
+
+Anything that lives outside the repo, such as a scheduled task in `~/.claude/scheduled-tasks/`, is off the branch. Describe the change you'd make to it, and make it only after the owner says yes.
 
 ## 3. Write PLUMBER.md
 
 Copy [templates/PLUMBER.md](templates/PLUMBER.md) to the repo root and fill it in. Keep it short, because every `/maintain` run reads it. Be exact about two things `/maintain` depends on:
 
 - **Cases:** which file, and its format if it differs from FORMATS.md.
+- **Trace fields:** if the app's log uses its own names, map them to FORMATS.md, for example `t=time, kind=type, input=raw, files=[recording]`. `/maintain` and friends' reports read traces through this map.
+- **State and reports:** if an existing routine is kept, use its state file and report folder rather than adding Plumber's own.
 - **What replay can't cover:** UI, pasting, hotkeys, anything that needs a person. Also what replay costs to run and which keys it needs.
 
 If there's no notes file of lessons learned, copy [templates/LEARNED.md](templates/LEARNED.md) to the repo root. If there is one (say `NOTES.md` with a "What we learned" section), point `PLUMBER.md` at it.
@@ -65,17 +74,23 @@ Add one action, in the most natural place for this app, that appends a flag for 
 
 - If the app already has a headless mode or a test entry point that takes an input and prints the output, use it as it is. Don't refactor it during setup. If it's a separate copy of the app's logic, note that in `PLUMBER.md` as a risk.
 - If it doesn't have one, add the smallest one: a flag such as `--replay <input>`, or a test helper, that calls the same code the real app uses.
-- If the repo already has a replay script, keep it. Otherwise write `scripts/replay`, in whatever language the repo uses for scripts. It builds the app, runs every case, checks `expect` and `reject`, and reruns a failure once if the app calls a model. It prints ✔ or ✘ per case, with the output under each ✘. It reports a case it couldn't run (no network, no key) separately, and never as a failure. It exits non-zero only on real failures of cases that aren't `known_failing`.
+- If the repo already has a replay script, keep it, and add only what it lacks from the list below: `known_failing`, and reporting "couldn't run" separately from a failure. Otherwise write `scripts/replay`, in whatever language the repo uses for scripts. It builds the app, runs every case, checks `expect` and `reject`, and reruns a failure once if the app calls a model. It prints ✔ or ✘ per case, with the output under each ✘. It reports a case it couldn't run (no network, no key) separately, and never as a failure. It exits non-zero only on real failures of cases that aren't `known_failing`.
 
 ## 7. Install /maintain
 
-Copy [skills/maintain/SKILL.md](skills/maintain/SKILL.md) to `.claude/skills/maintain/SKILL.md` in the repo, so it's versioned with the app. Add this to the repo's AGENTS.md or CLAUDE.md, creating AGENTS.md if neither exists:
+**If the owner kept an existing routine** (step 2), don't install `/maintain`. With their yes, add a section to that routine that does steps 3 and 4 of [skills/maintain/SKILL.md](skills/maintain/SKILL.md): collect flags and friends' reports, and treat each one as worth acting on. In the snippet below, name that routine instead of `/maintain`.
+
+Otherwise, copy [skills/maintain/SKILL.md](skills/maintain/SKILL.md) to `.claude/skills/maintain/SKILL.md` in the repo, so it's versioned with the app. Add this to the repo's AGENTS.md or CLAUDE.md, creating AGENTS.md if neither exists:
 
 ```markdown
 ## Plumber
 
-This app is looked after by Plumber. Read PLUMBER.md before changing behaviour. To run a maintenance pass,
-use /maintain (Claude Code), or follow .claude/skills/maintain/SKILL.md step by step (other agents).
+This app is looked after by Plumber (github.com/crocsarecool/plumber). Read PLUMBER.md before changing behaviour.
+
+- Owner: to run a maintenance pass, use /maintain (Claude Code), or follow .claude/skills/maintain/SKILL.md
+  step by step (other agents).
+- Anyone else: if the app got something wrong, use "That was wrong" and then "Send to <owner>" (PLUMBER.md → People
+  says where it is). Never upload or send a report for them. They send it themselves.
 ```
 
 If the owner chose in step 2 to replace an existing routine, change it so it runs `/maintain`, or retire it. Don't leave two running.

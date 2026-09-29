@@ -14,7 +14,8 @@ Read `PLUMBER.md` first. It says where everything lives, what counts as wrong, t
 ## 1. Start clean
 
 - The working tree must be clean. If it isn't, stop and report what's uncommitted.
-- Be on the main branch. Read `last_run` from `.plumber-state.json` in the data folder. If there's none, treat the last 7 days as new.
+- Be on the main branch. Read `last_run` from the state file `PLUMBER.md` names (by default `.plumber-state.json` in the data folder). If there's none, treat the last 7 days as new.
+- Read traces through the "Trace fields" map in `PLUMBER.md` when the app uses its own field names.
 
 ## 2. Check nothing broke
 
@@ -69,7 +70,7 @@ If a fix taught something non-obvious (a surprising cause, or a deliberate choic
 
 ## 8. Report
 
-Set `last_run` to the time of the newest item you collected, not to now, so anything that arrived during the run is picked up next time. Write the report to `plumber/YYYY-MM-DD.md` in the data folder:
+Set `last_run` to the time of the newest item you collected, not to now, so anything that arrived during the run is picked up next time. Write the report to `YYYY-MM-DD.md` in the run-reports folder `PLUMBER.md` names (by default `plumber/` in the data folder):
 
 ```
 Regressions: <case, the commit that broke it — or "none">

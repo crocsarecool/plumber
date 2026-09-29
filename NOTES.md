@@ -27,6 +27,17 @@ A fresh agent read SETUP.md as if installing Plumber into Murmur, without changi
 11. **Owner or friend.** Nothing said how the app knows whose install it is, when everyone builds from the same repo. *Now:* it asks once, the first time someone flags something.
 12. **Recordings rotate away.** Murmur keeps the last 500, so a flagged recording could be gone before it's copied. *Now:* input files are copied first, with a text-only case if one is already gone.
 
+## Agent entry point, and a second test run (29 Sep 2026)
+
+AGENTS.md is now the front door, so someone can point any agent at the repo and it knows what to do: set up, report as a friend, update, or work on Plumber. CLAUDE.md only imports it.
+
+A fresh agent tried two opening messages on Murmur without changing anything. The first was an owner saying "set up Plumber". The second was a non-coding friend saying "it got something wrong, help me report it". Both reached the right files. What it found, now fixed:
+
+1. **Keeping an existing routine had no path.** Choosing "leave it" still installed `/maintain`, which meant two routines, and nothing read flags. *Now:* step 2 offers keep-and-extend (recommended), replace, or leave alone. Keeping it means the routine gains SKILL steps 3–4 and `/maintain` isn't installed.
+2. **Trace field names.** Murmur's log uses `time`, `type`, `raw` and `recording`. *Now:* PLUMBER.md has a "Trace fields" map, along with rows for the state file and run reports.
+3. **The friend path never asked what was wrong.** *Now:* it asks what was wrong, what it should have been, and their name. It finds the data folder itself, reads only the last few traces, skips lines with no id, opens each file for them, and warns that replay goes through the app's services.
+4. Smaller: the owner's name wasn't asked, an existing replay script lacked `known_failing` and "couldn't run", "10 minutes" oversold it, and the two reading orders disagreed.
+
 ## Borrowed from Murmur's daily review
 
 `cleaning-up-murmur` (in `~/.claude/scheduled-tasks/`) was more mature than the first `/maintain`. These rules came from it:

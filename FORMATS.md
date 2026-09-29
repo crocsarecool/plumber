@@ -2,7 +2,7 @@
 
 The files Plumber reads and writes. [SETUP.md](SETUP.md) and the [maintain skill](skills/maintain/SKILL.md) both follow these.
 
-If the app already keeps something equivalent (a log with one line per action, a folder of test cases), keep it and record its path and shape in `PLUMBER.md`. Don't duplicate it. Extra fields are always fine, and missing optional fields are too.
+If the app already keeps something equivalent (a log with one line per action, a folder of test cases), keep it and record its path and shape in `PLUMBER.md`. If its fields have other names, `PLUMBER.md` → "Trace fields" maps them. Don't duplicate it. Extra fields are always fine, and missing optional fields are too.
 
 ## traces.jsonl
 
@@ -37,8 +37,10 @@ One line per "that was wrong".
 
 ```
 report.json    {"app": "murmur", "from": "Anil", "flag": {…}, "trace": {…}, "version": "c3d6970"}
-files/         only the files the friend ticked
+files/         only the files the friend ticked, at their path relative to the data folder
 ```
+
+`trace` is the trace line as the app wrote it, unchanged. `version` is the trace's own version, or else the app repo's current commit, or else `"unknown"`.
 
 Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB.
 

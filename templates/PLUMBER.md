@@ -25,10 +25,13 @@
 |---|---|
 | Data folder | <path> (not in git) |
 | Traces | <path, or the existing log if reused> |
+| Trace fields | <"FORMATS.md", or the map, e.g. `t=time, kind=type, input=raw, files=[recording]`> |
 | Flags | <path> |
 | Cases | <path> |
 | Case format | <"FORMATS.md", or the fields this app's cases use> |
-| Reports from /maintain | <data folder>/plumber/ |
+| Maintenance routine | </maintain, or the existing routine that was kept> |
+| State file | <data folder>/.plumber-state.json <or the kept routine's> |
+| Run reports | <data folder>/plumber/ <or the kept routine's> |
 | Inbox | <path> |
 | Lessons learned | <LEARNED.md, or the existing notes file and section> |
 | App log | <path, or "none"> |
