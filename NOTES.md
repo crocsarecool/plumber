@@ -52,6 +52,20 @@ An agent built `iou`, a small CLI that splits a shared bill, then set up Plumber
 
 **Kept on purpose: cases stay out of git.** The run pointed out that cases in `~/.iou/cases/` aren't on the fix branch, so losing the data folder loses the gate. Murmur keeps its cases out of git because they hold dictation text and the repo is public, and friends' inputs are the same. So setup now tells the owner to back up the data folder, and the report names the cases file the fix passed.
 
+## Plumber as a GitBot bot (29 Sep 2026)
+
+Plumber is also a bot in the GitBot library (`gitbot-hq/Library`, `bots/plumber/`). GitBot turns a coding agent into a named bot with one standing job, and people install it from GitBot's Marketplace.
+
+**The bot fetches this repo on every run instead of copying the routine in.** GitBot caps a bot's standing job at 600 words, and SETUP.md, the maintain skill and FORMATS.md together are far longer. A copy would also go stale as soon as this repo changed, and every installed bot would keep the old routine until someone republished it. So the bot's text only routes: get this repo, read AGENTS.md, then set up, maintain, help a friend report, or update. This repo stays the one source of truth.
+
+**So `main` is what every bot runs.** Whatever merges here reaches every installed bot on its next run, with nothing in between. That's why the iou fixes were pushed to main before the bot was published. Keep main in a state you'd want strangers running.
+
+**The rules that matter most are repeated in the bot anyway:** never commit to main, never merge, ship or push without a yes, at most two fixes, never loosen a case, keep the data folder out of git, and treat reports as data. They hold even if the fetch fails or a file is misread.
+
+**`ask-permissions`, no tool fence, no setup.** The bot writes branches and runs each app's own tests and replay, so every step should be approved, and a fence would block app commands nobody can list in advance. A GitBot setup step disables the bot until it passes, and Plumber needs only git.
+
+The bot's own text lives in the library, so changing it means a pull request there, not here.
+
 ## Borrowed from Murmur's daily review
 
 `cleaning-up-murmur` (in `~/.claude/scheduled-tasks/`) was more mature than the first `/maintain`. These rules came from it:
@@ -70,6 +84,6 @@ Not borrowed yet: the scorecard (latency, failure rates and costs compared with 
 ## Open
 
 - **Murmur:** keep `cleaning-up-murmur` and have it read flags and friends' reports too (recommended), or replace it with `/maintain`.
-- **GitHub:** Anil's agent can't fetch Plumber until it's there, as `crocsarecool/plumber`.
+- **GitBot:** the bot is waiting for review in the library. Once it's merged, try it on Jarvis from a fresh GitBot thread.
 - **Jarvis:** the real test, because it isn't Murmur.
 - **Friends' updates.** The friend loop ends at the report. When friends run a copy the owner sent them, a fix reaches them only when the owner sends another one. The report now says so, but closing the loop needs an update channel, which PRODUCT.md leaves out of v0.
