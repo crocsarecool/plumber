@@ -26,10 +26,10 @@ One JSON line per thing the app did for someone: a dictation, a request, a comma
 One line per "that was wrong".
 
 ```json
-{"t": "2026-09-29T10:05:01Z", "trace": "2026-09-29T10-04-12.381Z", "note": "dropped the word ship", "by": "me"}
+{"t": "2026-09-29T10:05:01.207Z", "trace": "2026-09-29T10-04-12.381Z", "note": "dropped the word ship", "by": "me"}
 ```
 
-`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. A note of just `test` means someone was checking that flagging works, and `/maintain` doesn't act on it. `by` is `"me"` on the owner's install, or the friend's name on theirs. The app asks once which it is.
+`t` has milliseconds, like trace times, so a flag and its trace compare correctly against `last_run`. `trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. A note of just `test` means someone was checking that flagging works, and `/maintain` doesn't act on it. `by` is `"me"` on the owner's install, or the friend's name on theirs. The app asks once which it is.
 
 ## Reports (friends)
 
@@ -42,7 +42,7 @@ files/         only the files the friend ticked, at their path relative to the d
 
 `trace` is the trace line as the app wrote it, unchanged. `version` is the trace's own version, or else the app repo's current commit, or else `"unknown"`.
 
-Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB. Once read, a report and its zip sit in `inbox/<id>/`, so a zip at the top of `inbox/` is one nobody has handled yet.
+Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/` in the data folder, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB. Once read, a report and its zip sit in `inbox/<id>/`, so a zip at the top of `inbox/` is one nobody has handled yet.
 
 ## cases/cases.json (data folder)
 
@@ -59,6 +59,7 @@ A JSON array. A case is something the app must keep doing right. The cases toget
  "check": "reads as one clean sentence", "known_failing": null}
 ```
 
+- `from`: who reported it: `"me"` for the owner, or a friend's name. When several people hit the same thing, list them all (`"me, Priya"`).
 - `input`: the text to replay. Always text, even a single word.
 - `file`: optional. For a file input (a recording, an image), its name in `cases/files/`, copied there so log rotation can't delete it. Replay uses it instead of `input`, and a missing one is "couldn't run", not a failure.
 - `expect` / `reject`: regexes the output must / must not match. Prefer these, because they're cheap and exact.
@@ -70,13 +71,13 @@ If the app calls a model and isn't deterministic, replay reruns a failed case on
 ## .plumber-state.json (data folder)
 
 ```json
-{"last_run": "2026-09-29T11:00:00Z", "main": "c3d6970"}
+{"last_run": "2026-09-29T11:00:00.000Z", "main": "c3d6970"}
 ```
 
-`last_run`: `/maintain` only looks at flags, errors and signs of trouble newer than this. It's set to the time of the newest item a run collected, not the time the run ended, so nothing that arrives mid-run is skipped. Reports don't use it: any zip at the top of `inbox/` is unread, however old.
+`last_run`: `/maintain` only looks at flags, errors and signs of trouble newer than this. Write it in UTC with milliseconds, like trace times, and compare times as times, not as text: as text, `11:00:00.123Z` sorts before `11:00:00Z`. It's set to the newest time among what a run collected and the traces those point at, not the time the run ended, so nothing that arrives mid-run is skipped. A run that collects nothing leaves it alone. Reports don't use it: any zip at the top of `inbox/` is unread, however old.
 
 `main`: the commit on main the last run started from. The next run looks for what broke a case among the commits after it. A date isn't enough, because a branch merged late keeps its commits' earlier dates.
 
 ## plumber/ (data folder)
 
-One report per `/maintain` run, `plumber/YYYY-MM-DD.md`, in the shape the maintain skill gives. The next run reads the latest one.
+One report per `/maintain` run, `plumber/YYYY-MM-DD-HHMM.md` (UTC, when the run started, so sorting by name puts them in order), in the shape the maintain skill gives. The next run reads the latest one.

@@ -52,7 +52,7 @@ This is adapted from a real review of [Murmur](#where-it-came-from), a dictation
 
 ```
 Regressions: none. Every case that passed before still passes.
-Fixed on maintain-2026-09-29:
+Fixed: on maintain-2026-09-29
   - Numbers read out digit by digit no longer go to the model.
     Case 2026-09-28T05-07-20.320Z: 2.1 s → 0.4 s, same digits.
   - A number on its own no longer gets a full stop.
@@ -68,7 +68,7 @@ Reply to friends: none
 - something a person flagged
 - a problem it saw at least twice
 
-It never merges or installs on its own.
+It never installs, and it never merges unless you say so.
 
 ## What it adds to your app
 
@@ -77,10 +77,13 @@ It never merges or installs on its own.
 | `PLUMBER.md` | repo | What the app is for, what counts as wrong, and how to build, test, replay and ship |
 | `LEARNED.md` | repo | What each fix taught. It's read before every fix, so old fixes don't get undone. |
 | `.claude/skills/maintain/` | repo | The `/maintain` routine, versioned with your app |
+| `scripts/replay` | repo | Runs every saved case against the current code |
 | `traces.jsonl` | data folder | One line per thing the app did |
 | `flags.jsonl` | data folder | Every "that was wrong" |
 | `cases/` | data folder | Failures saved so they can be replayed against any build |
 | `inbox/` | data folder | Friends' reports waiting for `/maintain` |
+| `plumber/` | data folder | One report per `/maintain` run |
+| `.plumber-state.json` | data folder | Where the last run got to |
 
 If your app already has some of this, like a log, test cases or a notes file, Plumber keeps it and adds only what's missing.
 

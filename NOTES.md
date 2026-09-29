@@ -80,6 +80,35 @@ A read of every file, looking for what a real run over several days would hit. W
 8. **Setup's test flag got "fixed".** *Now:* the owner types `test` as the note, and `/maintain` leaves it alone.
 9. Smaller: the README said "about 10 minutes" again, and claimed the report never has anyone's words while its example quoted them. "That was wrong" said "the last trace" even for a button next to a result. Setup told apps that already keep cases in git to move them.
 
+## Rerun of iou with the new steps (29 Sep 2026)
+
+Cursor's `iou` wasn't on this Mac, so a fresh agent rebuilt it from Cursor's logs, with the same two bugs, and ran the whole cycle in a scratch folder: setup, the owner's flag, Priya's report, an attended run where the owner said "not yet" to merging, an unattended run while the owner had uncommitted work, and a run after the owner merged. The read-through fixes held: no false regressions while the fix waited, the owner's checkout was untouched, the waiting branch was cleared after the merge, the `test` flag was ignored, and the state file's `main` found commits a date would have missed. What it found, now fixed:
+
+1. **Setup's check run fixed things.** Step 9 ran a full `/maintain`, which worked on the "not tried yet" cases and asked to merge in the middle of setup. *Now:* setup's run is a check only (collect and report), and fixing starts with the first real run.
+2. **A merge by hand dropped the friend.** Only `/maintain`'s own merge said "then ship", so after the owner merged by hand, nothing told them Priya still had the old copy. *Now:* the catch-up that clears a merged branch's cases also says what Ship needs doing for each friend whose case it was. A friend whose report matched an existing case is added to that case's `from`, because in the rerun Priya's report matched a case setup had marked `from: me`.
+3. **Same-day reports overwrote each other.** *Now:* `-2`, `-3`, like branches.
+4. **"Stamp the version at build time"** assumed a build. `iou` is a plain script and Priya gets a bare copy. *Now:* read the commit at run time from the repo, and add a small command that stamps it into the copy friends get.
+5. **Trying a fix by hand wrote fake traces** into the owner's log. *Now:* replay and before/after runs point the data folder at a throwaway folder.
+6. **Setup's Send check couldn't be done** from the owner's install, and a real try would leave a zip that looked like a friend's report. *Now:* try it as a friend in a throwaway data folder, then delete the zip.
+7. Smaller:
+   - `last_run` is the newest time among what was collected and the traces those point at, and stays put when nothing was collected. Flag times have milliseconds, so a flagged trace isn't collected twice.
+   - The report has a line for everything, including a run that fixed nothing and cases cleared by a merge.
+   - `/maintain` reads the last report.
+   - A friend is asked their name.
+   - Replay prints the output of cases with a `check` rule.
+   - The inbox is in the data folder.
+   - The scheduled prompt says nobody is watching.
+   - Setup also looks at `crontab` and launchd.
+   - A waiting branch is re-checked when main moves.
+   - "That was wrong" can be found from the app itself.
+
+**Tested again before merging.** A fresh agent ran the same cycle against these changes, with the owner merging by hand and the teas bug reaching the owner only through Priya's report. All twelve checks passed. It found four more problems, now fixed:
+
+- **"The latest report" was the oldest.** With `-2` names, `2026-09-29-2.md` sorts before `2026-09-29.md`. *Now:* reports are named `YYYY-MM-DD-HHMM.md`.
+- **The version hid uncommitted changes.** Setup has the owner try the app before committing, so the trace named the code before Plumber. *Now:* `git describe --always --dirty`.
+- **A matching flag made a duplicate case.** "Add the person to `from`" came before "otherwise write a case", so a case that still failed got written twice. *Now:* a flag with the same input as a case uses that case. The same bug with a different input gets its own case.
+- **Times compared as text.** `11:00:00.123Z` sorts before `11:00:00Z`. *Now:* `last_run` has milliseconds, and times are compared as times.
+
 ## Borrowed from Murmur's daily review
 
 `cleaning-up-murmur` (in `~/.claude/scheduled-tasks/`) was more mature than the first `/maintain`. These rules came from it:
