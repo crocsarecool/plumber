@@ -17,7 +17,8 @@ One JSON line per thing the app did for someone: a dictation, a request, a comma
 - `id`: unique and sortable. A timestamp works.
 - `version`: the build's git commit, so a report says whether it's already fixed.
 - `input` / `output`: text, or a short summary with the full thing in `files` (paths relative to the data folder).
-- `error`: the error message if it failed, else `null`.
+- `error`: the error message if it failed. `null`, `""` or a missing field all mean it worked.
+- Lines that aren't actions (settings changes, background events) can share the log. Give them no `id` and Plumber ignores them.
 - Never write API keys, tokens or passwords. Cap the log (for example the last 30 days or 50 MB) and cap `files` the same way.
 
 ## flags.jsonl
@@ -28,7 +29,7 @@ One line per "that was wrong".
 {"t": "2026-09-29T10:05:01Z", "trace": "2026-09-29T10-04-12.381Z", "note": "dropped the word ship", "by": "me"}
 ```
 
-`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. `by` is `"me"` on the owner's machine, or the friend's name in a report.
+`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. `by` is `"me"` on the owner's install, or the friend's name on theirs. The app asks once which it is.
 
 ## Reports (friends)
 
@@ -36,12 +37,14 @@ One line per "that was wrong".
 
 ```
 report.json    {"app": "murmur", "from": "Anil", "flag": {…}, "trace": {…}, "version": "c3d6970"}
-files/         only the files that trace names (a recording, a screenshot)
+files/         only the files the friend ticked
 ```
 
-Before saving, the app shows the friend exactly what's in it: the text, and the files with their sizes. The friend's name is asked once and remembered. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`.
+Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB.
 
 ## cases/cases.json
+
+The default. If the app already keeps cases somewhere else or in another shape, `PLUMBER.md` names that file and format, and Plumber uses it instead.
 
 A JSON array. A case is something the app must keep doing right. The cases together are the gate every fix has to pass.
 
@@ -65,4 +68,8 @@ If the app calls a model and isn't deterministic, replay reruns a failed case on
 {"last_run": "2026-09-29T11:00:00Z"}
 ```
 
-`/maintain` only looks at flags, errors and reports newer than this.
+`/maintain` only looks at flags, errors and reports newer than this. It's set to the time of the newest item a run collected, not the time the run ended, so nothing that arrives mid-run is skipped.
+
+## plumber/ (data folder)
+
+One report per `/maintain` run, `plumber/YYYY-MM-DD.md`, in the shape the maintain skill gives. The next run reads the latest one.

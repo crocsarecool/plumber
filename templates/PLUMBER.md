@@ -27,6 +27,8 @@
 | Traces | <path, or the existing log if reused> |
 | Flags | <path> |
 | Cases | <path> |
+| Case format | <"FORMATS.md", or the fields this app's cases use> |
+| Reports from /maintain | <data folder>/plumber/ |
 | Inbox | <path> |
 | Lessons learned | <LEARNED.md, or the existing notes file and section> |
 | App log | <path, or "none"> |
@@ -39,6 +41,17 @@
 | Test | <command> |
 | Replay | <command> |
 | Ship | <what gets the new version to the owner and to friends> |
+| Notify | <how to tell the owner something's waiting, or "none"> |
+
+## What replay can't cover
+
+<UI, pasting, hotkeys, anything that needs a person. Check these from traces and the log instead.>
+
+Replay needs <keys> and costs about <amount> per case.
+
+## Signs of trouble
+
+<Patterns in the traces that usually mean something went wrong, even without a flag. e.g. the same input retried within 30 s.>
 
 ## Rules
 
