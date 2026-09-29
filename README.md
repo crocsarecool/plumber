@@ -26,6 +26,8 @@ If your agent can't open GitHub links, clone this repo to a scratch folder outsi
 
 Setup looks at your app, asks you a few questions, and wires everything in on a branch. It takes about 10 minutes of your time, and the agent does the rest.
 
+If you use [GitBot](https://github.com/gitbot-hq/GitBot), install **Plumber** from its Marketplace and start a thread in your app's folder. It does whichever of the three fits, without you pasting a link.
+
 ## How it works
 
 ```mermaid
