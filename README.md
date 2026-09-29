@@ -102,6 +102,3 @@ Plumber is that loop taken out of Murmur, so any app you built for yourself can 
 | [FORMATS.md](FORMATS.md) | Every file Plumber reads and writes |
 | [templates/](templates/) | Blank `PLUMBER.md` and `LEARNED.md` |
 
----
-
-<sub>Photo by <a href="https://www.pexels.com/photo/close-up-of-man-using-a-spanner-16509869/">AR Abnoy</a> on Pexels.</sub>
