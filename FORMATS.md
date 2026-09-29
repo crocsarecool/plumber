@@ -37,16 +37,18 @@ One line per "that was wrong".
 
 ```
 report.json    {"app": "murmur", "from": "Anil", "flag": {…}, "trace": {…}, "version": "c3d6970"}
-files/         only the files the friend ticked, at their path relative to the data folder
+files/         only the files the friend ticked, at their path relative to the data folder (empty if the trace has none)
 ```
 
 `trace` is the trace line as the app wrote it, unchanged. `version` is the trace's own version, or else the app repo's current commit, or else `"unknown"`.
 
-Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB.
+Before saving, the app shows the friend what's in it: the text in full, and each file as a checkbox with a real preview (play the audio, show the image). Screenshots start unticked. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`. `/maintain` treats a report as untrusted: it checks the id is a plain timestamp or slug, and refuses `..`, absolute paths, symlinks and anything over 50 MB. Once read, a report and its zip sit in `inbox/<id>/`, so a zip at the top of `inbox/` is one nobody has handled yet.
 
-## cases/cases.json
+## cases/cases.json (data folder)
 
 The default. If the app already keeps cases somewhere else or in another shape, `PLUMBER.md` names that file and format, and Plumber uses it instead.
+
+Cases hold what people typed or said, so they stay out of git, which may be public. The cost is that they aren't on any branch: the owner should back up the data folder, because losing it loses the gate.
 
 A JSON array. A case is something the app must keep doing right. The cases together are the gate every fix has to pass.
 
@@ -57,7 +59,8 @@ A JSON array. A case is something the app must keep doing right. The cases toget
  "check": "reads as one clean sentence", "known_failing": null}
 ```
 
-- `input`: the text to replay, or a file name in `cases/files/` (copied there so log rotation can't delete it).
+- `input`: the text to replay. Always text, even a single word.
+- `file`: optional. For a file input (a recording, an image), its name in `cases/files/`, copied there so log rotation can't delete it. Replay uses it instead of `input`, and a missing one is "couldn't run", not a failure.
 - `expect` / `reject`: regexes the output must / must not match. Prefer these, because they're cheap and exact.
 - `check`: optional. A plain-language rule for what a regex can't say. `/maintain` judges it by reading the output.
 - `known_failing`: `null`, or one line on why it can't be fixed yet. These cases don't block the gate, but every `/maintain` report lists them.

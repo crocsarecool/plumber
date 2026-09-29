@@ -27,7 +27,7 @@
 | Traces | <path, or the existing log if reused> |
 | Trace fields | <"FORMATS.md", or the map, e.g. `t=time, kind=type, input=raw, files=[recording]`> |
 | Flags | <path> |
-| Cases | <path> |
+| Cases | <path> (not in git: back up the data folder) |
 | Case format | <"FORMATS.md", or the fields this app's cases use> |
 | Maintenance routine | </maintain, or the existing routine that was kept> |
 | State file | <data folder>/.plumber-state.json <or the kept routine's> |
@@ -43,7 +43,7 @@
 | Build | <command> |
 | Test | <command> |
 | Replay | <command> |
-| Ship | <what gets the new version to the owner and to friends> |
+| Ship | <what gets the new version to the owner, and to friends, e.g. "friends only get it when I send them a new copy"> |
 | Notify | <how to tell the owner something's waiting, or "none"> |
 
 ## What replay can't cover

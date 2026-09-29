@@ -38,6 +38,20 @@ A fresh agent tried two opening messages on Murmur without changing anything. Th
 3. **The friend path never asked what was wrong.** *Now:* it asks what was wrong, what it should have been, and their name. It finds the data folder itself, reads only the last few traces, skips lines with no id, opens each file for them, and warns that replay goes through the app's services.
 4. Smaller: the owner's name wasn't asked, an existing replay script lacked `known_failing` and "couldn't run", "10 minutes" oversold it, and the two reading orders disagreed.
 
+## Third test run: iou, a new app (29 Sep 2026)
+
+An agent built `iou`, a small CLI that splits a shared bill, then set up Plumber from SETUP.md and ran a full cycle. The owner flagged a dinner where tax and tip were split in half. A friend's report said "3 teas 4 each" came out as $3. `/maintain` fixed both on a branch, and replay went from failing to five passing cases. The owner loop worked. What it found, now fixed:
+
+1. **Setup deadlocked.** SETUP said not to merge `plumber-setup` until step 9, and step 9 ran `/maintain`, which starts from main and never commits to it. The agent had to fast-forward main to get through. *Now:* step 9 asks the owner to merge before running `/maintain`, and the skill stops if main has no `PLUMBER.md`. `/maintain` still never merges itself.
+2. **"Fixed in the next update" wasn't true.** Ship was "No command", so the friend kept the broken script. *Now:* setup records how fixes reach friends, and the report's reply to friends is worded from that. If the owner has to send a new copy, it says so.
+3. **"Regression" was wider than the report.** Seeded cases already marked `known_failing` failed on the baseline. *Now:* only a failing case that isn't `known_failing` is a regression.
+4. **`known_failing` was never cleared,** so "Still broken" would have listed fixed cases. *Now:* the gate clears it when the case passes.
+5. **A one-word input looked like a missing file,** because `input` could be text or a file name. *Now:* `input` is always text, and a file goes in `file`. Replay's per-case output, including "couldn't run", is spelled out.
+6. **Handled reports stayed in `inbox/` and Downloads.** *Now:* Downloads zips are moved, not copied, and a handled zip goes into `inbox/<id>/`.
+7. Smaller: Send to <owner> assumed every trace had files, and the default owner name was the git user, which was "Cursor Agent".
+
+**Kept on purpose: cases stay out of git.** The run pointed out that cases in `~/.iou/cases/` aren't on the fix branch, so losing the data folder loses the gate. Murmur keeps its cases out of git because they hold dictation text and the repo is public, and friends' inputs are the same. So setup now tells the owner to back up the data folder, and the report names the cases file the fix passed.
+
 ## Borrowed from Murmur's daily review
 
 `cleaning-up-murmur` (in `~/.claude/scheduled-tasks/`) was more mature than the first `/maintain`. These rules came from it:
@@ -58,3 +72,4 @@ Not borrowed yet: the scorecard (latency, failure rates and costs compared with 
 - **Murmur:** keep `cleaning-up-murmur` and have it read flags and friends' reports too (recommended), or replace it with `/maintain`.
 - **GitHub:** Anil's agent can't fetch Plumber until it's there, as `crocsarecool/plumber`.
 - **Jarvis:** the real test, because it isn't Murmur.
+- **Friends' updates.** The friend loop ends at the report. When friends run a copy the owner sent them, a fix reaches them only when the owner sends another one. The report now says so, but closing the loop needs an update channel, which PRODUCT.md leaves out of v0.
