@@ -40,7 +40,7 @@ A fresh agent tried two opening messages on Murmur without changing anything. Th
 
 ## Third test run: iou, a new app (29 Sep 2026)
 
-An agent built `iou`, a small CLI that splits a shared bill, then set up Plumber from SETUP.md and ran a full cycle. The owner flagged a dinner where tax and tip were split in half. A friend's report said "3 teas 4 each" came out as $3. `/maintain` fixed both on a branch, and replay went from failing to five passing cases. The owner loop worked. What it found, now fixed:
+Cursor built `iou`, a small CLI that splits a shared bill, then set up Plumber from SETUP.md and ran a full cycle. The owner flagged a dinner where tax and tip were split in half. A friend's report said "3 teas 4 each" came out as $3. `/maintain` fixed both on a branch, and replay went from failing to five passing cases. The owner loop worked. What it found, now fixed:
 
 1. **Setup deadlocked.** SETUP said not to merge `plumber-setup` until step 9, and step 9 ran `/maintain`, which starts from main and never commits to it. The agent had to fast-forward main to get through. *Now:* step 9 asks the owner to merge before running `/maintain`, and the skill stops if main has no `PLUMBER.md`. `/maintain` still never merges itself.
 2. **"Fixed in the next update" wasn't true.** Ship was "No command", so the friend kept the broken script. *Now:* setup records how fixes reach friends, and the report's reply to friends is worded from that. If the owner has to send a new copy, it says so.
@@ -51,6 +51,20 @@ An agent built `iou`, a small CLI that splits a shared bill, then set up Plumber
 7. Smaller: Send to <owner> assumed every trace had files, and the default owner name was the git user, which was "Cursor Agent".
 
 **Kept on purpose: cases stay out of git.** The run pointed out that cases in `~/.iou/cases/` aren't on the fix branch, so losing the data folder loses the gate. Murmur keeps its cases out of git because they hold dictation text and the repo is public, and friends' inputs are the same. So setup now tells the owner to back up the data folder, and the report names the cases file the fix passed.
+
+## Read-through after the iou run (29 Sep 2026)
+
+A read of every file, looking for what a real run over several days would hit. What it found, now fixed:
+
+1. **An unmerged fix looked like a regression.** A case fixed on a `maintain-` branch still fails on main, so the next run's baseline called it broken. The iou fixes made it worse by clearing `known_failing` as soon as the branch passed. Cursor's logs show it: after the run, all five cases had `known_failing: null` and the branch was left unmerged, so the next run on main would have reported four regressions. *Now:* it reads "fixed on <branch>, not merged yet" until the branch is in main, and each run starts by catching up on those branches.
+2. **Work was lost for good.** `last_run` moves past everything collected, but a run fixes only two things, so a third flag was never seen again. Setup's own examples, the owner's worst complaints, were never worked on either. *Now:* both are cases marked "not tried yet", and `/maintain` works through them after flags and errors.
+3. **Scheduled runs fought the owner.** A run stopped whenever the owner had uncommitted work, and when it did run, it left their checkout on the fix branch. Cursor's run ended that way, on `maintain-2026-09-29`. *Now:* `/maintain` works in its own worktree of main and never switches the owner's checkout.
+4. **Update could add a second routine.** For an app that kept its own routine (the recommended choice for Murmur), "replace SKILL.md" would install `/maintain` next to it. It also couldn't tell what changed since setup. *Now:* `PLUMBER.md` records the Plumber version, update reads the changes since then, and it updates a kept routine instead of installing `/maintain`. Changes to cases or `PLUMBER.md` need the owner's yes.
+5. **Old reports were skipped.** A report about something from two weeks ago was older than `last_run`. *Now:* every unread zip in `inbox/` counts, whatever its date.
+6. **Finding the breaking commit** used `git log --merges`, which misses fast-forward merges, and a date misses branches merged late. *Now:* the state file records the main commit each run started from.
+7. **The gate couldn't compare `check` rules,** because the baseline didn't judge them. It also didn't say what to do when a case couldn't run on the branch. *Now:* both runs judge them, and a fix that couldn't be fully checked says so.
+8. **Setup's test flag got "fixed".** *Now:* the owner types `test` as the note, and `/maintain` leaves it alone.
+9. Smaller: the README said "about 10 minutes" again, and claimed the report never has anyone's words while its example quoted them. "That was wrong" said "the last trace" even for a button next to a result. Setup told apps that already keep cases in git to move them.
 
 ## Borrowed from Murmur's daily review
 
@@ -72,4 +86,5 @@ Not borrowed yet: the scorecard (latency, failure rates and costs compared with 
 - **Murmur:** keep `cleaning-up-murmur` and have it read flags and friends' reports too (recommended), or replace it with `/maintain`.
 - **GitHub:** Anil's agent can't fetch Plumber until it's there, as `crocsarecool/plumber`.
 - **Jarvis:** the real test, because it isn't Murmur.
+- **Apps on a server.** SETUP says traces go in a folder on the server, but `/maintain` runs on the owner's machine and nothing says how it reaches that folder. Friends of a web app also share the owner's server, so their flags may land there directly and "Send to <owner>" may not be needed. Needs a decision before Jarvis or any web app.
 - **Friends' updates.** The friend loop ends at the report. When friends run a copy the owner sent them, a fix reaches them only when the owner sends another one. The report now says so, but closing the loop needs an update channel, which PRODUCT.md leaves out of v0.

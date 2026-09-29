@@ -24,7 +24,7 @@ If your agent can't open GitHub links, clone this repo to a scratch folder outsi
 | 🙋 Using a friend's app, and it got something wrong | *"I use \<friend\>'s \<app\> and it got something wrong. Help me report it, using github.com/crocsarecool/plumber"* |
 | 🔄 Already using Plumber | *"Update Plumber from github.com/crocsarecool/plumber"* |
 
-Setup looks at your app, asks you a few questions, and wires everything in on a branch. It takes about 10 minutes of your time, and the agent does the rest.
+Setup looks at your app, asks you a few questions, and wires everything in on a branch. Your part is answering those questions and trying the app once. The agent does the rest.
 
 ## How it works
 
@@ -46,7 +46,7 @@ There are two things to learn:
 
 ## What `/maintain` tells you
 
-This is adapted from a real review of [Murmur](#where-it-came-from), a dictation app, on 29 Sep 2026. Cases are named by id, so nobody's words end up in the report.
+This is adapted from a real review of [Murmur](#where-it-came-from), a dictation app, on 29 Sep 2026. Cases are named by id, and the report never quotes what anyone typed or said.
 
 ```
 Regressions: none. Every case that passed before still passes.

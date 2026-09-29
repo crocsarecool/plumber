@@ -48,9 +48,13 @@ If they want to install or update the owner's app, that's in the app's own READM
 
 The app already has Plumber, and the person wants the latest version.
 
-1. Compare the app's `.claude/skills/maintain/SKILL.md` with [skills/maintain/SKILL.md](skills/maintain/SKILL.md) here, and replace it if it changed.
-2. Read what changed in [SETUP.md](SETUP.md) and [FORMATS.md](FORMATS.md) since the app was set up (`git log` here). Apply anything new that the app is missing, on a branch named `plumber-update`, the same way SETUP.md would.
-3. Don't touch the app's `PLUMBER.md`, lessons-learned file, cases or data. Those belong to the app.
+Work on a branch named `plumber-update`.
+
+1. **Find what changed.** `PLUMBER.md` → "Plumber version" says which commit of this repo the app was set up from. Run `git log -p <that commit>..HEAD -- SETUP.md FORMATS.md skills templates` here, and read [NOTES.md](NOTES.md) for why. If the version is missing or `unknown`, or you can't run git here, go through SETUP.md and FORMATS.md step by step and compare the app with each one.
+2. **The maintenance routine.** If `PLUMBER.md` → "Maintenance routine" is `/maintain`, replace the app's `.claude/skills/maintain/SKILL.md` with [skills/maintain/SKILL.md](skills/maintain/SKILL.md). If it names a routine the owner kept, don't install `/maintain`, because two routines would run. Update that routine's Plumber section instead, and only with the owner's yes if it lives outside the repo.
+3. **Everything else** that the app is missing, apply the same way SETUP.md would.
+4. **The app's own things.** `PLUMBER.md`, the lessons-learned file, cases and data belong to the app. If a change needs them changed (a new field, a new marker in `known_failing`), say what and why, and change them only on the owner's yes. The one exception: set "Plumber version" in `PLUMBER.md` to the commit you updated from.
+5. Tell the owner in a few lines what changed, and merge only on their yes.
 
 ## Working on this repo
 

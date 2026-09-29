@@ -36,7 +36,8 @@ Anything that lives outside the repo, such as a scheduled task in `~/.claude/sch
 
 Copy [templates/PLUMBER.md](templates/PLUMBER.md) to the repo root and fill it in. Keep it short, because every `/maintain` run reads it. Be exact about the things `/maintain` depends on:
 
-- **Cases:** which file, and its format if it differs from FORMATS.md. Cases hold people's input, so they live in the data folder, not in git. That means they aren't on any branch, and losing the data folder loses the gate. Tell the owner to back it up.
+- **Plumber version:** the commit of this repo you're reading (`git rev-parse --short HEAD` in your clone, or `unknown` if you read it as web pages). Updates start from it.
+- **Cases:** which file, and its format if it differs from FORMATS.md. If the app has no cases yet, put them in the data folder: they hold people's input, so they stay out of git. That means they aren't on any branch, and losing the data folder loses the gate. Tell the owner to back it up.
 - **Ship:** how a fix reaches the owner and how it reaches friends. If friends only get it when the owner sends them a new copy, write exactly that. `/maintain` uses it to say what a friend is waiting on.
 - **Trace fields:** if the app's log uses its own names, map them to FORMATS.md, for example `t=time, kind=type, input=raw, files=[recording]`. `/maintain` and friends' reports read traces through this map.
 - **State and reports:** if an existing routine is kept, use its state file and report folder rather than adding Plumber's own.
@@ -56,7 +57,7 @@ Each thing the app does, failures included, should append one line to a traces l
 
 ## 5. Add "That was wrong"
 
-Add one action, in the most natural place for this app, that appends a flag for the last trace to `flags.jsonl` and asks for an optional one-line note:
+Add one action, in the most natural place for this app, that appends a flag to `flags.jsonl` and asks for an optional one-line note. It flags the result it sits next to, or the last trace when there's no such place (a menu item, a command):
 
 | App | Natural place |
 |---|---|
@@ -103,10 +104,10 @@ Turn the examples from question 1 into the first cases, in the file and format `
 ## 9. Check it end to end
 
 1. Build and run the app's tests.
-2. Run replay. The seeded cases should run. Any that fail should be real, known problems: mark them `known_failing` with a reason.
-3. Ask the owner to use the app once and press "That was wrong". Check that a trace and a flag appeared and point at each other. If "Send to <owner>" exists, check that the zip opens and holds only what was ticked. If trying it means installing over the owner's working copy of the app (a `build.sh` that replaces the installed app, a deploy), ask first.
+2. Run replay. The seeded cases should run. Any that fail should be real, known problems: mark them `known_failing: "not tried yet: <what's wrong>"`, so `/maintain` works on them in its first runs.
+3. Ask the owner to use the app once, press "That was wrong", and type `test` as the note, so `/maintain` doesn't try to fix it. Check that a trace and a flag appeared and point at each other. If "Send to <owner>" exists, check that the zip opens and holds only what was ticked. If trying it means installing over the owner's working copy of the app (a `build.sh` that replaces the installed app, a deploy), ask first.
 4. Commit on `plumber-setup`, show the owner what changed in a few lines, and ask to merge it into main. Merge only on a yes. `/maintain` starts from main and never commits to it, so it can't run on the setup branch.
-5. On main, run `/maintain` once, attended, and check that it picks up the flag. If the owner said no to merging, skip this and tell them the first `/maintain` after they merge is the check.
+5. On main, run `/maintain` once, attended, and check that it picks up the test flag and leaves it alone. If the owner said no to merging, skip this and tell them the first `/maintain` after they merge is the check.
 
 Then tell them in a few lines:
 
