@@ -1,0 +1,68 @@
+# Formats
+
+The files Plumber reads and writes. [SETUP.md](SETUP.md) and the [maintain skill](skills/maintain/SKILL.md) both follow these.
+
+If the app already keeps something equivalent (a log with one line per action, a folder of test cases), keep it and record its path and shape in `PLUMBER.md`. Don't duplicate it. Extra fields are always fine, and missing optional fields are too.
+
+## traces.jsonl
+
+One JSON line per thing the app did for someone: a dictation, a request, a command, a job. Append-only.
+
+```json
+{"id": "2026-09-29T10-04-12.381Z", "t": "2026-09-29T10:04:12.381Z", "version": "c3d6970",
+ "kind": "dictation", "input": "um so i think we should uh ship it", "output": "I think we should ship it.",
+ "files": ["recordings/2026-09-29T10-04-12.381Z.wav"], "ms": 1840, "error": null}
+```
+
+- `id`: unique and sortable. A timestamp works.
+- `version`: the build's git commit, so a report says whether it's already fixed.
+- `input` / `output`: text, or a short summary with the full thing in `files` (paths relative to the data folder).
+- `error`: the error message if it failed, else `null`.
+- Never write API keys, tokens or passwords. Cap the log (for example the last 30 days or 50 MB) and cap `files` the same way.
+
+## flags.jsonl
+
+One line per "that was wrong".
+
+```json
+{"t": "2026-09-29T10:05:01Z", "trace": "2026-09-29T10-04-12.381Z", "note": "dropped the word ship", "by": "me"}
+```
+
+`trace` is the id of the thing flagged, which is usually the last trace. `note` is optional. `by` is `"me"` on the owner's machine, or the friend's name in a report.
+
+## Reports (friends)
+
+"Send to <owner>" saves one zip file, named `<app>-report-<trace id>.zip`, to the friend's Downloads folder:
+
+```
+report.json    {"app": "murmur", "from": "Anil", "flag": {…}, "trace": {…}, "version": "c3d6970"}
+files/         only the files that trace names (a recording, a screenshot)
+```
+
+Before saving, the app shows the friend exactly what's in it: the text, and the files with their sizes. The friend's name is asked once and remembered. The owner drops the zip into `inbox/`, or `/maintain` finds it in `~/Downloads`.
+
+## cases/cases.json
+
+A JSON array. A case is something the app must keep doing right. The cases together are the gate every fix has to pass.
+
+```json
+{"id": "2026-09-29T10-04-12.381Z", "what": "keeps the word 'ship' after a filler word",
+ "added": "2026-09-29", "from": "me", "input": "um so i think we should uh ship it",
+ "expect": ["\\bship it\\b"], "reject": ["\\buh\\b"],
+ "check": "reads as one clean sentence", "known_failing": null}
+```
+
+- `input`: the text to replay, or a file name in `cases/files/` (copied there so log rotation can't delete it).
+- `expect` / `reject`: regexes the output must / must not match. Prefer these, because they're cheap and exact.
+- `check`: optional. A plain-language rule for what a regex can't say. `/maintain` judges it by reading the output.
+- `known_failing`: `null`, or one line on why it can't be fixed yet. These cases don't block the gate, but every `/maintain` report lists them.
+
+If the app calls a model and isn't deterministic, replay reruns a failed case once. Only failing twice counts.
+
+## .plumber-state.json (data folder)
+
+```json
+{"last_run": "2026-09-29T11:00:00Z"}
+```
+
+`/maintain` only looks at flags, errors and reports newer than this.
